@@ -1,0 +1,52 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: black;
+    color: cyan;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .container {
+    margin: 50px auto;
+    width: 50%;
+    background-color: #002b36;
+    padding: 20px;
+    border-radius: 10px;
+  }
+  
+  h1 {
+    color: cyan;
+  }
+  
+  input[type="text"] {
+    width: 80%;
+    padding: 10px;
+    border: 2px solid cyan;
+    background-color: black;
+    color: cyan;
+    border-radius: 5px;
+  }
+  
+  button {
+    padding: 10px;
+    background-color: cyan;
+    color: black;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+  
+  button:hover {
+    background-color: #00bcd4;
+  }
+  
+  ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  li {
+    padding: 8px;
+    border-bottom: 1px solid cyan;
+  }
+  

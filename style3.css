@@ -1,0 +1,116 @@
+/* General Page Styling */
+body {
+    background-image: url(background.jpg);
+    font-family: 'Poppins', sans-serif;
+    background-color: #f4f4f9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+/* Container for Login Form */
+.login-container {
+    background-color: #266d49;
+    padding: 20px 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 450px;
+    color: white;
+}
+
+.login-container h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 22px;
+}
+
+/* Form Styling */
+.form-group, .metrics, .metrics2 {
+    margin-bottom: 15px;
+}
+
+.form-group label, .metrics label, .metrics2 label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.form-group input, .metrics input, .metrics2 input {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+/* Crop Selection & Button Styling */
+.input-area {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.input-area input, .input-area select {
+    flex: 1;
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.input-area button {
+    padding: 8px 15px;
+    background-color: #000;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.input-area button:hover {
+    background-color: #1c3070;
+}
+
+/* Name List Styling */
+.name-list {
+    margin-top: 10px;
+}
+
+.name-item {
+    display: flex;
+    justify-content: space-between;
+    background: #f8f9fa;
+    padding: 8px;
+    border-radius: 5px;
+    color: black;
+    margin-bottom: 5px;
+}
+
+.name-item button {
+    background: red;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.name-item button:hover {
+    background: darkred;
+}
+
+/* Submit Button */
+.btn {
+    width: 100%;
+    padding: 10px;
+    background-color: black;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.btn:hover {
+    background-color: #030610;
+}
