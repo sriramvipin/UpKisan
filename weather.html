@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Forecast App</title>
+    <link href="https://fonts.googleapis.com/css?family=Overlock" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css?family=Overlock');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Overlock', Helvetica, sans-serif;
+            background: #643a7a;
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-image: linear-gradient(to top, #40334f, #2f273c, #272232, #201c29);
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .search-box {
+            display: flex;
+            margin-bottom: 20px;
+        }
+
+        .search-box input {
+            flex: 1;
+            padding: 12px 15px;
+            border: none;
+            border-radius: 30px 0 0 30px;
+            outline: none;
+            font-size: 16px;
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .search-box button {
+            padding: 0 20px;
+            border: none;
+            background: #503760;
+            color: white;
+            border-radius: 0 30px 30px 0;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .search-box button:hover {
+            background: #695b93;
+        }
+
+        .weather-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 25px 25px 40px 0px rgba(0,0,0,0.33);
+            overflow: hidden;
+        }
+
+        .current-weather {
+            padding: 25px;
+            background-image: url("https://unsplash.it/600/400?image=1043&blur");
+            background-size: cover;
+            color: white;
+            position: relative;
+        }
+
+        .current-weather::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: 1;
+        }
+
+        .weather-header {
+            position: relative;
+            z-index: 2;
+            margin-bottom: 20px;
+        }
+
+        .weather-header h2 {
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+
+        .weather-info {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .temperature h1 {
+            font-size: 60px;
+            font-weight: 400;
+        }
+
+        .temperature h1 span {
+            font-size: 2em;
+        }
+
+        .hi-low {
+            font-size: 18px;
+            margin-top: -10px;
+        }
+
+        .weather-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .condition {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .condition img {
+            width: 50px;
+            height: 50px;
+            margin-right: 10px;
+        }
+
+        .details p {
+            margin: 5px 0;
+        }
+
+        .forecast-container {
+            padding: 25px;
+        }
+
+        .forecast-container h3 {
+            margin-bottom: 15px;
+            color: #503760;
+        }
+
+        .forecast {
+            display: flex;
+            overflow-x: auto;
+            gap: 15px;
+            padding-bottom: 10px;
+        }
+
+        .forecast-item {
+            min-width: 120px;
+            text-align: center;
+            padding: 15px;
+            background: #f5f5f5;
+            border-radius: 10px;
+            transition: transform 0.3s ease;
+            border-top: 1px solid #ddd;
+        }
+
+        .forecast-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .forecast-item .day {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .forecast-item img {
+            width: 40px;
+            height: 40px;
+            margin: 10px 0;
+        }
+
+        .forecast-item .temp {
+            font-size: 18px;
+            margin: 10px 0;
+        }
+
+        .forecast-item .details {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .proverb {
+            padding: 15px 25px;
+            background: #d1baca;
+            font-style: italic;
+            text-align: center;
+            font-size: 16px;
+            color: #4b384c;
+        }
+
+        .moon {
+            position: absolute;
+            width: 6rem;
+            height: 6rem;
+            top: 45px;
+            right: 55px;
+            border-radius: 50px;
+            background-image: linear-gradient(to left top, #b1b1c5, #928fa3, #746f82, #575162, #3c3444);
+            box-shadow: 0 0 3rem rgba(177, 177, 197, 0.2);
+            animation: rise 1s ease-out;
+            z-index: 2;
+        }
+
+        .moon:hover {
+            transform: scale(1.2);
+            transition: 3s;
+        }
+
+        @keyframes drop {
+            0% {
+                transform: translate3d(40px, -320px, 0) scaleX(1) scaleY(1) rotate(17deg);
+            }
+            85% {
+                transform: translate3d(0, 0, 0) scaleX(1) scaleY(1) rotate(17deg);
+            }
+            100% {
+                transform: translate3d(0, 0, 0) scaleX(3) scaleY(0) rotate(0deg);
+            }
+        }
+
+        @keyframes rise {
+            from {
+                transform: translate(-40px, 20px);
+            }
+            to {
+                transform: translate(0, 0px);
+            }
+        }
+
+        @keyframes slide {
+            0%, 45% {
+                transform: translateY(90px);
+            }
+            to {
+                transform: translateY(0px);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .weather-info {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .temperature {
+                margin-bottom: 20px;
+            }
+            
+            .forecast-item {
+                min-width: 100px;
+            }
+
+            .moon {
+                width: 4rem;
+                height: 4rem;
+                top: 20px;
+                right: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="search-box">
+            <input type="text" id="location-input" placeholder="Enter location...">
+            <button id="search-btn"><i class="fas fa-search"></i></button>
+        </div>
+        
+        <div class="weather-container">
+            <div class="current-weather">
+                <div class="moon"></div>
+                <div class="weather-header">
+                    <h2 id="location">London, UK</h2>
+                    <p id="date">Saturday, March 29, 2025</p>
+                </div>
+                
+                <div class="weather-info">
+                    <div class="temperature">
+                        <h1 id="temp">12°</h1>
+                        <div class="hi-low">
+                            <span id="hi-temp">21°</span> / <span id="low-temp">9°</span>
+                        </div>
+                    </div>
+                    
+                    <div class="weather-details">
+                        <div class="condition">
+                            <img id="weather-icon" src="" alt="Weather icon">
+                            <p id="condition-text">Partly Cloudy</p>
+                        </div>
+                        <div class="details">
+                            <p>Wind: <span id="wind">E 7 km/h</span></p>
+                            <p>Humidity: <span id="humidity">87%</span></p>
+                            <p>Precipitation: <span id="precip">0 mm</span></p>
+                            <p>Sunrise: <span id="sunrise">6:45 AM</span></p>
+                            <p>Sunset: <span id="sunset">7:30 PM</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="forecast-container">
+                <h3>7-Day Forecast</h3>
+                <div class="forecast" id="forecast">
+                    <!-- Forecast items will be inserted here by JavaScript -->
+                </div>
+            </div>
+            
+            <div class="proverb">
+                <p id="weather-proverb">"Frogs croaking in the lagoon, Means rain will come real soon."</p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // API key and base URL
+        const apiKey = 'a03d2da9811b42fb94392633252903';
+        const baseUrl = 'http://api.weatherapi.com/v1';
+
+        // DOM elements
+        const locationInput = document.getElementById('location-input');
+        const searchBtn = document.getElementById('search-btn');
+        const locationEl = document.getElementById('location');
+        const dateEl = document.getElementById('date');
+        const tempEl = document.getElementById('temp');
+        const hiTempEl = document.getElementById('hi-temp');
+        const lowTempEl = document.getElementById('low-temp');
+        const weatherIconEl = document.getElementById('weather-icon');
+        const conditionTextEl = document.getElementById('condition-text');
+        const windEl = document.getElementById('wind');
+        const humidityEl = document.getElementById('humidity');
+        const precipEl = document.getElementById('precip');
+        const sunriseEl = document.getElementById('sunrise');
+        const sunsetEl = document.getElementById('sunset');
+        const forecastEl = document.getElementById('forecast');
+        const proverbEl = document.getElementById('weather-proverb');
+
+        // Weather proverbs based on conditions
+        const weatherProverbs = {
+            'rain': '"Frogs croaking in the lagoon, Means rain will come real soon."',
+            'clear': '"Red sky at night, sailors delight. Red sky in morning, sailors take warning."',
+            'cloudy': '"When clouds appear like towers, the Earth is refreshed by frequent showers."',
+            'snow': '"When the snowbird sings early, the winter will be severe."',
+            'storm': '"When sea-gulls fly to land, a storm is at hand."',
+            'default': '"Whether its cold or whether its hot, we shall have weather, whether or not."'
+        };
+
+        // Initialize the app
+        function init() {
+            // Set event listeners
+            searchBtn.addEventListener('click', handleSearch);
+            locationInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    handleSearch();
+                }
+            });
+            
+            // Load default location (London)
+            getWeatherData('London');
+        }
+
+        // Handle search button click
+        function handleSearch() {
+            const location = locationInput.value.trim();
+            if (location) {
+                getWeatherData(location);
+            }
+        }
+
+        // Get weather data from API
+        async function getWeatherData(location) {
+            try {
+                // Get current weather and forecast
+                const forecastResponse = await fetch(`${baseUrl}/forecast.json?key=${apiKey}&q=${location}&days=7&aqi=no&alerts=no`);
+                
+                if (!forecastResponse.ok) {
+                    throw new Error('Location not found');
+                }
+                
+                const forecastData = await forecastResponse.json();
+                
+                // Update UI with the data
+                updateCurrentWeather(forecastData);
+                updateForecast(forecastData);
+                
+            } catch (error) {
+                alert(`Error: ${error.message}`);
+            }
+        }
+
+        // Update current weather display
+        function updateCurrentWeather(data) {
+            const current = data.current;
+            const location = data.location;
+            const forecast = data.forecast.forecastday[0];
+            
+            // Format the date
+            const date = new Date(location.localtime);
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            
+            // Update elements
+            locationEl.textContent = `${location.name}, ${location.country}`;
+            dateEl.textContent = date.toLocaleDateString('en-US', options);
+            tempEl.textContent = `${Math.round(current.temp_c)}°`;
+            hiTempEl.textContent = `${Math.round(forecast.day.maxtemp_c)}°`;
+            lowTempEl.textContent = `${Math.round(forecast.day.mintemp_c)}°`;
+            weatherIconEl.src = `https:${current.condition.icon}`;
+            conditionTextEl.textContent = current.condition.text;
+            windEl.textContent = `${current.wind_dir} ${Math.round(current.wind_kph)} km/h`;
+            humidityEl.textContent = `${current.humidity}%`;
+            precipEl.textContent = `${current.precip_mm} mm`;
+            sunriseEl.textContent = forecast.astro.sunrise;
+            sunsetEl.textContent = forecast.astro.sunset;
+            
+            // Set weather proverb based on condition
+            const condition = current.condition.text.toLowerCase();
+            if (condition.includes('rain') || condition.includes('drizzle')) {
+                proverbEl.textContent = weatherProverbs.rain;
+            } else if (condition.includes('clear') || condition.includes('sunny')) {
+                proverbEl.textContent = weatherProverbs.clear;
+            } else if (condition.includes('cloud')) {
+                proverbEl.textContent = weatherProverbs.cloudy;
+            } else if (condition.includes('snow')) {
+                proverbEl.textContent = weatherProverbs.snow;
+            } else if (condition.includes('storm') || condition.includes('thunder')) {
+                proverbEl.textContent = weatherProverbs.storm;
+            } else {
+                proverbEl.textContent = weatherProverbs.default;
+            }
+            
+            // Update background based on time of day
+            const hour = date.getHours();
+            const isNight = hour >= 18 || hour < 6;
+            
+            if (isNight) {
+                document.querySelector('.moon').style.display = 'block';
+            } else {
+                document.querySelector('.moon').style.display = 'none';
+            }
+        }
+
+        // Update forecast display
+        function updateForecast(data) {
+            forecastEl.innerHTML = '';
+            
+            data.forecast.forecastday.forEach((day, index) => {
+                const date = new Date(day.date);
+                const dayName = date.toLocaleDateString('en-US', { weekday: 'short' });
+                
+                const forecastItem = document.createElement('div');
+                forecastItem.classList.add('forecast-item');
+                
+                forecastItem.innerHTML = `
+                    <div class="day">${dayName}</div>
+                    <img src="https:${day.day.condition.icon}" alt="${day.day.condition.text}">
+                    <div class="temp">${Math.round(day.day.maxtemp_c)}° / ${Math.round(day.day.mintemp_c)}°</div>
+                    <div class="details">
+                        <p>Humidity: ${day.day.avghumidity}%</p>
+                        <p>Rain: ${day.day.totalprecip_mm} mm</p>
+                        <p>Sunrise: ${day.astro.sunrise}</p>
+                        <p>Sunset: ${day.astro.sunset}</p>
+                    </div>
+                `;
+                
+                forecastEl.appendChild(forecastItem);
+            });
+        }
+
+        // Initialize the app when the page loads
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>

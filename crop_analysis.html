@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crop Health Monitor</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #2c3e50;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        #map {
+            height: 400px;
+            margin-top: 20px;
+        }
+        .info-box {
+            background-color: #ecf0f1;
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Crop Health Monitoring & Fertilizer Recommendation</h1>
+    
+    <button onclick="getLocation()">📍 Get Location</button>
+    
+    <div id="map"></div>
+    
+    <div class="info-box">
+        <h2>📍 Location</h2>
+        <p id="location">Not Available</p>
+    </div>
+    
+    <div class="info-box">
+        <h2>🌱 Plant Health Status</h2>
+        <p id="ndvi">NDVI Data: Waiting...</p>
+    </div>
+    
+    <div class="info-box">
+        <h2>🌿 Fertilizer Recommendation</h2>
+        <p id="fertilizer">Suggestion: Waiting for data...</p>
+    </div>
+
+    <script>
+        let map, marker;
+
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(showPosition, showError);
+            } else {
+                alert("Geolocation is not supported by this browser.");
+            }
+        }
+
+        function showPosition(position) {
+            const latitude = position.coords.latitude;
+            const longitude = position.coords.longitude;
+            
+            document.getElementById('location').textContent = `Latitude: ${latitude}, Longitude: ${longitude}`;
+            
+            if (!map) {
+                map = L.map('map').setView([latitude, longitude], 13);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '© OpenStreetMap contributors'
+                }).addTo(map);
+                marker = L.marker([latitude, longitude]).addTo(map);
+            } else {
+                map.setView([latitude, longitude], 13);
+                marker.setLatLng([latitude, longitude]);
+            }
+            
+            updateCropData(latitude, longitude);
+        }
+
+        function showError(error) {
+            switch(error.code) {
+                case error.PERMISSION_DENIED:
+                    alert("User denied the request for Geolocation.");
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    alert("Location information is unavailable.");
+                    break;
+                case error.TIMEOUT:
+                    alert("The request to get user location timed out.");
+                    break;
+                case error.UNKNOWN_ERROR:
+                    alert("An unknown error occurred.");
+                    break;
+            }
+        }
+
+        function updateCropData(lat, lon) {
+            // Simulating API calls for NDVI and fertilizer recommendation
+            setTimeout(() => {
+                const ndviValue = (Math.random() * (0.8 - 0.2) + 0.2).toFixed(2);
+                document.getElementById('ndvi').textContent = `NDVI Data: ${ndviValue}`;
+                
+                const fertilizerSuggestion = ndviValue < 0.5 ? 
+                    "Consider applying nitrogen-rich fertilizer" : 
+                    "Current fertilizer levels seem adequate";
+                document.getElementById('fertilizer').textContent = `Suggestion: ${fertilizerSuggestion}`;
+            }, 1500);
+        }
+    </script>
+</body>
+</html>

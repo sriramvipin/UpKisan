@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crop Recommendation System</title>
+    <style>
+        body {
+            background-image: url(background.jpg);
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            background-color: #f5f5f5;
+        }
+        h2 {
+            text-align: center;
+            color: #2c3e50;
+        }
+        form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            margin: 20px auto;
+        }
+        label {
+            font-weight: bold;
+            margin-top: 10px;
+            display: block;
+        }
+        input, button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+        }
+        button {
+            background-color: #3498db;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #dff0d8;
+            border: 1px solid #d6e9c6;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Crop Recommendation System</h2>
+
+<form id="cropForm">
+    <label for="nitrogen">Nitrogen Requirement (kg/ha):</label>
+    <input type="number" id="nitrogen" name="nitrogen" required>
+
+    <label for="phosphorus">Phosphorus Requirement (ppm):</label>
+    <input type="number" id="phosphorus" name="phosphorus" required>
+
+    <label for="potassium">Potassium Requirement (ppm):</label>
+    <input type="number" id="potassium" name="potassium" required>
+
+    <label for="ph">Soil pH:</label>
+    <input type="number" step="0.1" id="ph" name="ph" required>
+
+    <button type="button" onclick="recommendCrop()">Get Best Crop</button>
+</form>
+
+<div id="result"></div>
+
+<script>
+    async function recommendCrop() {
+        const nitrogen = document.getElementById('nitrogen').value;
+        const phosphorus = document.getElementById('phosphorus').value;
+        const potassium = document.getElementById('potassium').value;
+        const ph = document.getElementById('ph').value;
+
+        if (!nitrogen || !phosphorus || !potassium || !ph) {
+            alert('Please fill in all fields');
+            return;
+        }
+
+        const userInput = {
+            "nitrogen": parseFloat(nitrogen),
+            "phosphorus": parseFloat(phosphorus),
+            "potassium": parseFloat(potassium),
+            "ph": parseFloat(ph)
+        };
+
+        // Read and parse Nutrition.csv (Mocked data for demo)
+        const nutritionData = [
+            {"crop": "Wheat", "ph": 6.5, "nitrogen": 120, "potassium": 60, "phosphorus": 30},
+            {"crop": "Rice", "ph": 6.0, "nitrogen": 100, "potassium": 50, "phosphorus": 25},
+            {"crop": "Maize", "ph": 5.8, "nitrogen": 80, "potassium": 40, "phosphorus": 20},
+            {"crop": "Sugarcane", "ph": 7.0, "nitrogen": 130, "potassium": 70, "phosphorus": 40}
+        ];
+
+        // Calculate best match based on ascending order of preference (ph, Nitrogen, Potassium, Phosphorus)
+        let bestCrop = nutritionData.sort((a, b) => {
+            return (
+                Math.abs(a.ph - userInput.ph) - Math.abs(b.ph - userInput.ph) ||
+                Math.abs(a.nitrogen - userInput.nitrogen) - Math.abs(b.nitrogen - userInput.nitrogen) ||
+                Math.abs(a.potassium - userInput.potassium) - Math.abs(b.potassium - userInput.potassium) ||
+                Math.abs(a.phosphorus - userInput.phosphorus) - Math.abs(b.phosphorus - userInput.phosphorus)
+            );
+        });
+
+        const recommendedCrop = bestCrop[0].crop;
+
+        // Send data to AI_Proto1.html (API Call)
+        const apiKey = "AIzaSyDB2kVU1zshhht1VlgCE6y5Fhu9hDQ6bHs";
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+        const prompt = `Based on soil parameters: pH: ${ph}, Nitrogen: ${nitrogen} kg/ha, Potassium: ${potassium} ppm, Phosphorus: ${phosphorus} ppm, recommend the most suitable crop by comparing with the nutrient requirements of known crops.`;
+        
+        try {
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    prompt: prompt,
+                    max_tokens: 200
+                })
+            });
+
+            const data = await response.json();
+            const aiResponse = data.choices && data.choices.length > 0 ? data.choices[0].text : "No response from AI.";
+
+            document.getElementById('result').innerHTML = `
+                <h3>Best Crop Recommendation:</h3>
+                <p><strong>Top Match (CSV):</strong> ${recommendedCrop}</p>
+            `;
+        } catch (error) {
+            console.error('Error fetching AI response:', error);
+            document.getElementById('result').innerHTML = `
+                <p>Error fetching AI response. Please try again later.</p>
+            `;
+        }
+    }
+</script>
+
+</body>
+</html>

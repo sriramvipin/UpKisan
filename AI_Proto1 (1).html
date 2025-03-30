@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* ... (Your existing CSS styles) ... */
+        body {
+            background-image: url(aii.jpg);
+            font-family: sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #459452;
+        }
+
+        #chat-container {
+            width: 80%;
+            max-width: 600px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 20px;
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        #chat-log {
+            flex-grow: 1;
+            overflow-y: auto;
+            margin-bottom: 10px;
+        }
+
+        .user-message, .bot-message {
+            margin-bottom: 10px;
+            padding: 8px;
+            border-radius: 5px;
+        }
+
+        .user-message {
+            background-color: #e0f7fa;
+            align-self: flex-end;
+        }
+
+        .bot-message {
+            background-color: #f0f0f0;
+            align-self: flex-start;
+        }
+
+        #input-container {
+            display: flex;
+        }
+
+        #user-input {
+            flex-grow: 1;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        #send-button, #mic-button {
+            padding: 8px 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left:5px;
+        }
+        #mic-button{
+          background-color: #28a745;
+        }
+    </style>
+</head>
+<body>
+    <div id="chat-container">
+        <div id="chat-log"></div>
+        <div id="input-container">
+            <input type="text" id="user-input" placeholder="Type your message...">
+            <button id="send-button">Send</button>
+            <button id="mic-button">Mic</button>
+        </div>
+    </div>
+
+    <script>
+        const chatLog = document.getElementById('chat-log');
+        const userInput = document.getElementById('user-input');
+        const sendButton = document.getElementById('send-button');
+        const micButton = document.getElementById('mic-button');
+        const apiKey = 'AIzaSyDB2kVU1zshhht1VlgCE6y5Fhu9hDQ6bHs';
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+        function displayMessage(message, className) {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add(className);
+            messageDiv.textContent = message;
+            chatLog.appendChild(messageDiv);
+            chatLog.scrollTop = chatLog.scrollHeight;
+        }
+
+        async function sendMessage(message) {
+
+            if (message.toLowerCase().includes("weather")) {
+              window.location.href = "weather.html";
+              return; //Stop further execution
+            }
+
+            displayMessage(message, 'user-message');
+
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    contents: [{ parts: [{ text: message }] }],
+                }),
+            });
+
+            const data = await response.json();
+            if (data.candidates && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0].text) {
+                const botReply = data.candidates[0].content.parts[0].text;
+                displayMessage(botReply, 'bot-message');
+                speak(botReply); //Speak the response
+            } else {
+                displayMessage('Sorry, I couldn\'t understand.', 'bot-message');
+            }
+        }
+
+        sendButton.addEventListener('click', () => {
+            const message = userInput.value.trim();
+            if (message) {
+                sendMessage(message);
+                userInput.value = '';
+            }
+        });
+
+        userInput.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                sendButton.click();
+            }
+        });
+
+        //Voice recognition and speech synthesis
+        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        recognition.continuous = false;
+        recognition.lang = 'en-US'; //Default language
+
+        micButton.addEventListener('click', () => {
+            recognition.start();
+        });
+
+        recognition.onresult = (event) => {
+            const transcript = event.results[0][0].transcript;
+            userInput.value = transcript;
+            sendButton.click();
+        };
+
+        recognition.onerror = (event) => {
+            console.error('Speech recognition error:', event.error);
+        };
+
+        function speak(text) {
+            const utterance = new SpeechSynthesisUtterance(text);
+            window.speechSynthesis.speak(utterance);
+        }
+
+        //Language selection for voice
+        let language = 'en-US';
+
+        micButton.addEventListener('click', () => {
+          let langSelect = prompt("Enter 'en-US' for English or 'hi-IN' for Hindi");
+          if(langSelect === 'en-US' || langSelect === 'hi-IN'){
+            language = langSelect;
+            recognition.lang = language;
+            recognition.start();
+          } else{
+            alert("Invalid Language. Defaulting to English");
+            recognition.lang = 'en-US';
+            recognition.start();
+          }
+        });
+
+    </script>
+</body>
+</html>

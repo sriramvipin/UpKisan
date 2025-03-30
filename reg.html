@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kisan Registration</title>
+    <link rel="stylesheet" href="style3.css">
+</head>
+<body>
+  <header>
+    <h1>Welcome to UpKisan Registration</h1>
+    <p>Join our community and explore farming solutions.</p>
+  </header>
+
+  <div class="login-container">
+    <h2>Kisan Registration Page</h2>
+    <form action="try1.html" method="GET">
+      <div class="form-group">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="land-size">Land Size (In hectare)</label>
+        <input type="number" id="land-size" name="land-size" required>
+      </div>
+
+      <div class="form-group">
+        <label for="cearning">Current Earning (Per Annum)</label>
+        <input type="number" id="cearning" name="cearning" required>
+      </div>
+
+      <div class="container">
+        <h3>Enter Crop Names</h3>
+        <div class="input-area">
+          <input type="text" id="nameInput" placeholder="Type a crop name" />
+          
+          <select id="presetNames">
+            <option value="" disabled selected>Select a Crop</option>
+            <option value="Crop A">Crop A</option>
+            <option value="Crop B">Crop B</option>
+            <option value="Crop C">Crop C</option>
+            <option value="Crop D">Crop D</option>
+            <option value="Crop E">Crop E</option>
+          </select>
+
+          <button type="button" onclick="addName()">Add Crop</button>
+        </div>
+
+        <div class="name-list" id="nameList"></div>
+      </div>
+
+      <button type="submit" class="btn">Login</button>
+    </form>
+  </div>
+
+  <footer>
+    <p>&copy; 2025 UpKisan. All rights reserved.</p>
+  </footer>
+
+  <script>
+    const maxNames = 10; 
+    const nameList = document.getElementById('nameList');
+    const nameInput = document.getElementById('nameInput');
+    const presetNames = document.getElementById('presetNames');
+
+    function addName() {
+      const inputName = nameInput.value.trim();
+      const selectedName = presetNames.value;
+      let nameToAdd = inputName || selectedName;
+
+      if (!nameToAdd) {
+        alert('Please enter or select a name.');
+        return;
+      }
+
+      if (nameList.children.length >= maxNames) {
+        alert(`You can only add up to ${maxNames} names.`);
+        return;
+      }
+
+      const nameItem = document.createElement('div');
+      nameItem.className = 'name-item';
+      
+      const nameSpan = document.createElement('span');
+      nameSpan.textContent = nameToAdd;
+
+      const removeButton = document.createElement('button');
+      removeButton.textContent = 'Remove';
+      removeButton.onclick = () => nameList.removeChild(nameItem);
+
+      nameItem.appendChild(nameSpan);
+      nameItem.appendChild(removeButton);
+      
+      nameList.appendChild(nameItem);
+
+      nameInput.value = '';
+      presetNames.value = '';
+    }
+  </script>
+</body>
+</html>
